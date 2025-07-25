@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- ĐÃ THAY ĐỔI: Thêm địa chỉ backend của bạn ---
-    const BACKEND_URL = 'https://rag-9m9s.onrender.com';
-
     const loadNewsBtn = document.getElementById('load-news-btn');
     const processArticlesBtn = document.getElementById('process-articles-btn');
     const ragSection = document.getElementById('rag-section');
@@ -48,10 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="mt-4 p-3 bg-gray-50 rounded-lg">
                      <h4 class="text-sm font-bold text-gray-600 mb-2">Các nguồn được AI sử dụng:</h4>
                      <ul class="list-disc list-inside space-y-1 text-xs">
-                        ${[...new Set(data.sources.map(s => s.metadata.url))].map(url => {
-                            const source = data.sources.find(s => s.metadata.url === url);
-                            return `<li><a href="${source.metadata.url}" target="_blank" class="text-indigo-600 hover:underline">${source.metadata.title}</a></li>`
-                        }).join('')}
+                        ${data.sources.map(s => `<li><a href="${s.metadata.url}" target="_blank" class="text-indigo-600 hover:underline">${s.metadata.title}</a></li>`).join('')}
                      </ul>
                 </div>
             `;
@@ -72,12 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Hàm gọi API ---
     loadNewsBtn.addEventListener('click', async () => {
-        updateStatus('Đang tải tin tức từ máy chủ...', true);
+        updateStatus('Đang tải tin tức từ CafeF...', true);
         loadNewsBtn.disabled = true;
         try {
-            // --- ĐÃ THAY ĐỔI: Gọi đến API backend của bạn ---
-            const response = await fetch(`${BACKEND_URL}/api/news`);
-            if (!response.ok) throw new Error(`Lỗi từ máy chủ: ${response.statusText}`);
+            const response = await fetch('/api/news');
+            if (!response.ok) throw new Error('Failed to fetch news from server.');
             
             articlesCache = await response.json();
             renderArticles(articlesCache);
@@ -95,18 +88,17 @@ document.addEventListener('DOMContentLoaded', () => {
             updateStatus('Vui lòng tải tin tức trước.');
             return;
         }
-        updateStatus('Gửi yêu cầu xử lý và nhúng vector đến máy chủ... (Quá trình này có thể mất vài phút)', true);
+        updateStatus('Đang xử lý các bài báo và nhúng vector... (Quá trình này có thể mất vài phút)', true);
         processArticlesBtn.disabled = true;
         loadNewsBtn.disabled = true;
 
         try {
-            // --- ĐÃ THAY ĐỔI: Gọi đến API backend của bạn ---
-            const response = await fetch(`${BACKEND_URL}/api/process-articles`, {
+            const response = await fetch('/api/process-articles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ articles: articlesCache })
             });
-            if (!response.ok) throw new Error(`Lỗi từ máy chủ: ${response.statusText}`);
+            if (!response.ok) throw new Error('Failed to process articles on server.');
 
             const result = await response.json();
             updateStatus(result.message);
@@ -128,13 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ragQuestionInput.value = '';
         
         try {
-            // --- ĐÃ THAY ĐỔI: Gọi đến API backend của bạn ---
-            const response = await fetch(`${BACKEND_URL}/api/rag-query`, {
+            const response = await fetch('/api/rag-query', {
                  method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ query })
             });
-            if (!response.ok) throw new Error(`Lỗi từ máy chủ: ${response.statusText}`);
+            if (!response.ok) throw new Error('Failed to get RAG response.');
             
             const data = await response.json();
             renderRagResponse(data);
