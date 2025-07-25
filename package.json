@@ -1,0 +1,27 @@
+{
+  "name": "cos-may-san-tin-rag-pro",
+  "version": "1.0.0",
+  "description": "Advanced RAG system for investment news",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rag",
+    "gemini",
+    "render"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.12.0",
+    "@supabase/supabase-js": "^2.43.4",
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
